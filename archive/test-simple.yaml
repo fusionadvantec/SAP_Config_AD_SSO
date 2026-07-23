@@ -1,0 +1,31 @@
+env:
+  contexts:
+    - name: DevSecOps360
+      urls:
+        - https://devsecops360.fusion.co.th
+      includePaths:
+        - https://devsecops360.fusion.co.th.*
+  parameters:
+    failOnError: false
+    failOnWarning: false
+    progressToStdout: true
+jobs:
+  - type: passiveScan-config
+    parameters: {}
+  - type: spider
+    parameters:
+      context: DevSecOps360
+      maxDuration: 5
+  - type: passiveScan-wait
+    parameters: {}
+  - type: activeScan
+    parameters:
+      context: DevSecOps360
+  - type: report
+    parameters:
+      reportDir: /dast/output
+      reportFile: ZAP-Report
+      reportTitle: ZAP Simple Scan - DevSecOps360
+      template: traditional-json-plus
+  - type: exitStatus
+    parameters: {}

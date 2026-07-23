@@ -1,0 +1,73 @@
+env:
+    configs: {}
+    contexts:
+        - authentication:
+            method: script
+            parameters:
+                scriptName: AzureAD-ClientCredentials
+                scriptParamTenant: fusion.co.th
+            verification:
+                loggedInRegex: (access_token)
+                loggedOutRegex: (unauthorized_client|invalid_client|AADSTS)
+                method: response
+                pollFrequency: 60
+                pollPostData: ""
+                pollUnits: requests
+                pollUrl: ""
+          excludePaths:
+            - https://devsecops360.fusion.co.th/logout.*
+          includePaths:
+            - https://devsecops360.fusion.co.th.*
+          name: DevSecOps360
+          structure: {}
+          technology: {}
+          urls:
+            - https://devsecops360.fusion.co.th/*
+            - https://devsecops360.fusion.co.th/calendar
+            - https://devsecops360.fusion.co.th/dashboard
+          users:
+            - credentials:
+                 password: ${AZURE_CLIENT_SECRET}
+                username: b695463a-6a4c-4396-8add-5a8c7b10dc25
+              name: svc-devsecops360
+    parameters:
+        failOnError: true
+        failOnWarning: false
+        progressToStdout: true
+jobs:
+    - parameters:
+        action: add
+        engine: 'ECMAScript : Graal.js'
+        file: /dast/AzureAD-ClientCredentials.js
+        name: AzureAD-ClientCredentials
+        type: authentication
+      type: script
+    - parameters: {}
+      type: passiveScan-config
+    - parameters:
+        context: DevSecOps360
+        maxDuration: 5
+        user: svc-devsecops360
+      tests:
+        - name: At least 50 URLs found
+          onFail: INFO
+          operator: '>='
+          statistic: automation.spider.urls.added
+          type: stats
+          value: 50
+      type: spider
+    - parameters: {}
+      type: passiveScan-wait
+    - parameters:
+        context: DevSecOps360
+        user: svc-devsecops360
+      policyDefinition: {}
+      type: activeScan
+    - parameters:
+        reportDir: /dast/output
+        reportFile: ZAP-Report
+        reportTitle: ZAP by Checkmarx - DevSecOps360
+        template: traditional-json-plus
+      type: report
+    - parameters: {}
+      type: exitStatus

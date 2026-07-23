@@ -1,0 +1,58 @@
+env:
+    configs: {}
+    contexts:
+        - authentication:
+            method: manual
+            verification:
+                loggedInRegex: (access_token)
+                method: response
+                pollFrequency: 60
+                pollUnits: requests
+                pollUrl: ""
+          excludePaths:
+            - https://devsecops360.fusion.co.th/logout.*
+          includePaths:
+            - https://devsecops360.fusion.co.th.*
+          name: DevSecOps360
+          structure: {}
+          technology: {}
+          urls:
+            - https://devsecops360.fusion.co.th
+          users:
+            - credentials: {}
+              name: svc-devsecops360
+    parameters:
+        failOnError: true
+        failOnWarning: false
+        progressToStdout: true
+jobs:
+    - parameters:
+        action: add
+        engine: 'ECMAScript : Graal.js'
+        file: /dast/AddBearerToken.js
+        name: AddBearerToken
+        type: httpsender
+      type: script
+    - parameters: {}
+      type: passiveScan-config
+    - parameters: {}
+      type: passiveScan-wait
+    - parameters:
+        context: DevSecOps360
+        policyDefinition: {}
+        user: svc-devsecops360
+      type: activeScan
+    - parameters:
+        reportDir: /tmp/dast-output-1376010443
+        reportFile: ZAP-Report
+        reportTitle: ZAP by Checkmarx - DevSecOps360 (API)
+        template: traditional-json-plus
+      type: report
+    - parameters: {}
+      type: exitStatus
+    - name: export
+      parameters:
+        fileName: /tmp/dast-output-1376010443/ZAP-Sites-Tree.yaml
+        source: sitestree
+        type: yaml
+      type: export

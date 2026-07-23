@@ -1,0 +1,73 @@
+env:
+  configs: {}
+  contexts:
+    - authentication:
+        method: manual
+        verification:
+          loggedInRegex: (access_token)
+          method: response
+          pollFrequency: 60
+          pollUnits: requests
+          pollUrl: ""
+      excludePaths:
+        - https://devsecops360.fusion.co.th/logout.*
+      includePaths:
+        - https://devsecops360.fusion.co.th.*
+      name: DevSecOps360
+      structure: {}
+      technology: {}
+      urls:
+        - https://devsecops360.fusion.co.th
+      users:
+        - credentials: {}
+          name: svc-devsecops360
+  parameters:
+    failOnError: false
+    failOnWarning: false
+    progressToStdout: true
+jobs:
+  - parameters:
+      deleteAllRules: false
+    type: replacer
+    rules:
+      - description: Azure AD Bearer
+        enabled: true
+        matchString: REQUEST_HEADER
+        matchRegex: false
+        replacementString: "TOKEN_PLACEHOLDER"
+        initiators: []
+        matchType: req_head_string
+      - matchString: Authorization
+        matchRegex: false
+        replacementString: Authorization
+        initiators: []
+        matchType: req_head_name
+  - parameters: {}
+    type: passiveScan-config
+  - parameters:
+      context: DevSecOps360
+      maxDuration: 5
+      user: svc-devsecops360
+    tests:
+      - name: At least 50 URLs found
+        onFail: INFO
+        operator: '>='
+        statistic: automation.spider.urls.added
+        type: stats
+        value: 50
+    type: spider
+  - parameters: {}
+    type: passiveScan-wait
+  - parameters:
+      context: DevSecOps360
+      user: svc-devsecops360
+    policyDefinition: {}
+    type: activeScan
+  - parameters:
+      reportDir: /dast/output
+      reportFile: ZAP-Report
+      reportTitle: ZAP by Checkmarx - DevSecOps360
+      template: traditional-json-plus
+    type: report
+  - parameters: {}
+    type: exitStatus

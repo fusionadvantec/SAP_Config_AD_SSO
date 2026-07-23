@@ -1,0 +1,67 @@
+env:
+    configs: {}
+    contexts:
+        - authentication:
+            method: manual
+            verification:
+                loggedInRegex: (DevSecOps 360|\{)
+                method: response
+                pollFrequency: 60
+                pollUnits: requests
+                pollUrl: ""
+          excludePaths:
+            - https://devsecops360.fusion.co.th/logout.*
+            - https://devsecops360.fusion.co.th/robots.txt
+            - https://devsecops360.fusion.co.th/sitemap.xml
+          includePaths:
+            - https://devsecops360.fusion.co.th.*
+          name: DevSecOps360
+          structure: {}
+          technology: {}
+          urls:
+            - https://devsecops360.fusion.co.th
+            - https://devsecops360.fusion.co.th/dashboard
+            - https://devsecops360.fusion.co.th/calendar
+            - https://devsecops360.fusion.co.th/Heatmap
+          users:
+            - credentials: {}
+              name: svc-devsecops360
+    parameters:
+        failOnError: true
+        failOnWarning: false
+        progressToStdout: true
+jobs:
+    - parameters:
+        action: add
+        engine: 'ECMAScript : Graal.js'
+        file: /dast/AddBearerToken.js
+        name: AddBearerToken
+        type: httpsender
+      type: script
+    - parameters: {}
+      type: passiveScan-config
+    - parameters:
+        context: DevSecOps360
+        maxDuration: 5
+        user: svc-devsecops360
+      type: spider
+    - parameters: {}
+      type: passiveScan-wait
+    - parameters:
+        context: DevSecOps360
+        user: svc-devsecops360
+      type: activeScan
+    - parameters:
+        reportDir: /tmp/dast-output-1096330927
+        reportFile: ZAP-Report
+        reportTitle: ZAP by Checkmarx - DevSecOps360 (Auth)
+        template: traditional-json-plus
+      type: report
+    - parameters: {}
+      type: exitStatus
+    - name: export
+      parameters:
+        fileName: /tmp/dast-output-1096330927/ZAP-Sites-Tree.yaml
+        source: sitestree
+        type: yaml
+      type: export
