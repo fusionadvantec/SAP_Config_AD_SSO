@@ -20,9 +20,16 @@ env:
           technology: {}
           urls:
             - https://devsecops360.fusion.co.th
+            - https://devsecops360.fusion.co.th/login
             - https://devsecops360.fusion.co.th/dashboard
             - https://devsecops360.fusion.co.th/calendar
             - https://devsecops360.fusion.co.th/Heatmap
+            - https://devsecops360.fusion.co.th/MyDashboard
+            - https://devsecops360.fusion.co.th/Import
+            - https://devsecops360.fusion.co.th/Tickets
+            - https://devsecops360.fusion.co.th/TicketImport
+            - https://devsecops360.fusion.co.th/Pipeline
+            - https://devsecops360.fusion.co.th/OKRs
           users:
             - credentials: {}
               name: svc-devsecops360
@@ -52,7 +59,7 @@ jobs:
         user: svc-devsecops360
       type: activeScan
     - parameters:
-        reportDir: /tmp/dast-output-1096330927
+        reportDir: /tmp/dast-output-2147489149
         reportFile: ZAP-Report
         reportTitle: ZAP by Checkmarx - DevSecOps360 (Auth)
         template: traditional-json-plus
@@ -61,7 +68,7 @@ jobs:
       type: exitStatus
     - name: export
       parameters:
-        fileName: /tmp/dast-output-1096330927/ZAP-Sites-Tree.yaml
+        fileName: /tmp/dast-output-2147489149/ZAP-Sites-Tree.yaml
         source: sitestree
         type: yaml
       type: export

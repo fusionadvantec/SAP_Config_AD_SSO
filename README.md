@@ -54,7 +54,32 @@ context:
     - https://devsecops360.fusion.co.th/dashboard
     - https://devsecops360.fusion.co.th/calendar
     - https://devsecops360.fusion.co.th/Heatmap
+    - https://devsecops360.fusion.co.th/MyDashboard
+    - https://devsecops360.fusion.co.th/Import
+    - https://devsecops360.fusion.co.th/Tickets
+    - https://devsecops360.fusion.co.th/TicketImport
+    - https://devsecops360.fusion.co.th/Pipeline
+    - https://devsecops360.fusion.co.th/OKRs
 ```
+
+## Known Limitations / Blockers
+
+| Issue | Status |
+|---|---|
+| **ZAP `method: script` auth bug** (D-2026-07-06) | Workaround: manual auth + httpsender |
+| **Client (AJAX) spider** not supported by CxOne wrapper | Only traditional spider available — no JS rendering |
+| **Multi-domain OAuth2** (Azure AD login redirects to `login.microsoftonline.com`) | ZAP cannot follow external OAuth redirects through the wrapper |
+| **`*` wildcard not supported** in `context.urls` | Each SPA route must be listed manually |
+| **OpenAPI scan (`dast api`)** — auth injection doesn't work | Only web scan mode is reliable |
+| **`requestor` job params** (`requests`, `urls`) not supported | Use `context.urls` instead |
+| **`activeScan` job params** (`maxDuration`, `policyDefinition`) not supported | Scan depth controlled via CxOne UI settings |
+
+## Privacy
+
+Before committing, always replace hardcoded secrets with env var references:
+- `$ClientSecret = "_V18Q~..."` → `$ClientSecret = $env:AZURE_CLIENT_SECRET`
+- `password: _V18Q~...` → `password: ${AZURE_CLIENT_SECRET}`
+- Set `$env:CX_APIKEY` at runtime (never hardcoded)
 
 ## Archive
 
